@@ -1,33 +1,22 @@
-const inquirer = require('inquirer');
 const fs = require('fs');
-const generatePage = require('./src/page-template.js');
-
-/*const pageHTML = generatePage(name, github);
-
-
-fs.writeFile('./index.html', generatePage(name, github), err => {
-  if (err) throw new Error(err);
-
-  console.log('Portfolio complete! Check out index.html to see the output!');
-});*/
-
-console.log(inquirer);
+const inquirer = require('inquirer');
+const generatePage = require('./src/page-template');
 
 const promptUser = () => {
   return inquirer.prompt([
     {
-        type: 'input',
-        name: 'name',
-        message: 'What is your name? (Required)',
-        validate: nameInput => {
-          if (nameInput) {
-            return true;
-          } else {
-            console.log('Please enter your name!');
-            return false;
-          }
+      type: 'input',
+      name: 'name',
+      message: 'What is your name? (Required)',
+      validate: nameInput => {
+        if (nameInput) {
+          return true;
+        } else {
+          console.log('Please enter your name!');
+          return false;
         }
-      },
+      }
+    },
     {
       type: 'input',
       name: 'github',
@@ -56,18 +45,21 @@ const promptUser = () => {
   ]);
 };
 
-const promptProject = (portfolioData) => {
+const promptProject = portfolioData => {
   console.log(`
 =================
 Add a New Project
 =================
 `);
-if (!portfolioData.projects) {
-  portfolioData.projects = [];
-}
-  return inquirer.prompt([
-    {
-      type: 'input',
+
+  // If there's no 'projects' array property, create one
+  if (!portfolioData.projects) {
+    portfolioData.projects = [];
+  }
+  return inquirer
+    .prompt([
+      {
+        type: 'input',
         name: 'name',
         message: 'What is the name of your project? (Required)',
         validate: nameInput => {
@@ -137,11 +129,11 @@ if (!portfolioData.projects) {
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    console.log(portfolioData);
-    // will be uncommented in lesson 4
-    // const pageHTML = generatePage(portfolioData);
-    // fs.writeFile('./index.html', pageHTML, err => {
-    //   if (err) throw new Error(err);
-    //   console.log('Page created! Check out index.html in this directory to see it!');
-    // });
+    const pageHTML = generatePage(portfolioData);
+
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+
+      console.log('Page created! Check out index.html in this directory to see it!');
+    });
   });
